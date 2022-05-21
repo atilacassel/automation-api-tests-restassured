@@ -1,22 +1,26 @@
 package resources;
 
-import io.restassured.specification.RequestSpecification;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import org.hamcrest.Matchers;
+import org.junit.BeforeClass;
 
-import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
+public class BaseTest implements Constants{
 
-public class BaseTest {
-    protected final static  String PATH_BASE = "http://localhost:3000/";
-    protected final static  String PATH_USERS = PATH_BASE + "Usuários/";
-    protected final static  String PATH_PRODUCTS = PATH_BASE + "Produtos/";
-    protected final static  String PATH_CARTS = PATH_BASE + "Carrinhos/";
+    @BeforeClass
+    public static void setup() {
+        RestAssured.baseURI = APP_BASE_URL;
 
-    protected RequestSpecification prepareRequestWithBody(String requestBody) {
-        return given().contentType(JSON).body(requestBody).when();
-    }
+        RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder();
+        requestSpecBuilder.setContentType(APP_CONTENT_TYPE);
+        RestAssured.requestSpecification = requestSpecBuilder.build();
 
-    protected RequestSpecification prepareRequest() {
-        return given().contentType(JSON).when();
+        ResponseSpecBuilder responseSpecBuilder = new ResponseSpecBuilder();
+        responseSpecBuilder.expectResponseTime(Matchers.lessThan(MAX_TIMEOUT));
+        RestAssured.responseSpecification = responseSpecBuilder.build();
+
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
 }
