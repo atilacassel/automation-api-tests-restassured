@@ -18,4 +18,39 @@ public class UsersTest extends BaseTest {
                 .statusCode(200)
                 .body(is(not(nullValue())));
     }
+
+    @Test
+    public void registerUsersSuccessfully() {
+        given()
+                .body("{\n" +
+                        "        \"nome\": \"Atila da Silva\",\n" +
+                        "        \"email\": \"atila2@qa.com.br\",\n" +
+                        "        \"password\": \"teste\",\n" +
+                        "        \"administrador\": \"true\"\n" +
+                        "        }")
+                .when()
+                .post("/usuarios")
+                .then()
+                .log().all()
+                .statusCode(201)
+                .body("message", is("Cadastro realizado com sucesso"));
+    }
+
+    @Test
+    public void emailAlreadyRegistered() {
+        given()
+                .body("{\n" +
+                        "        \"nome\": \"Atila da Silva\",\n" +
+                        "        \"email\": \"atila2@qa.com.br\",\n" +
+                        "        \"password\": \"teste\",\n" +
+                        "        \"administrador\": \"true\"\n" +
+                        "        }")
+                .when()
+                .post("/usuarios")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .body("message", is("Este email já está sendo usado"));
+    }
 }
+
